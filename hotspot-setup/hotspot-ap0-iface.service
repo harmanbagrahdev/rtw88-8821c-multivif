@@ -1,0 +1,17 @@
+[Unit]
+Description=Create ap0 virtual interface and NAT rules
+After=NetworkManager.service network-online.target
+Wants=network-online.target
+
+[Service]
+# Type=oneshot + RemainAfterExit=yes is important: this makes systemd wait
+# for the script to fully finish (interface really created, NAT rules
+# really set) before starting anything that depends on it (hostapd).
+# Using Type=simple here was our original mistake — it let hostapd start
+# racing against an interface that wasn't ready yet.
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/hotspot-ap0-iface.sh
+
+[Install]
+WantedBy=multi-user.target

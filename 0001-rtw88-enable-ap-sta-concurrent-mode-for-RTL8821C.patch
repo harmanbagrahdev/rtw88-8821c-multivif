@@ -1,0 +1,53 @@
+From: Harman Bagrah <harmanbagrah.dev@gmail.com>
+Subject: [PATCH] wifi: rtw88: enable AP+STA concurrent mode for RTL8821C
+
+The rtw88 driver currently only advertises iface_combinations
+(allowing simultaneous STA + AP virtual interfaces on one radio) for
+the RTW_CHIP_TYPE_8822C chip. The RTL8821C chip, which shares the
+same core hardware/firmware architecture, has this capability gated
+out entirely, causing `iw list` to report "interface combinations
+are not supported" and preventing any concurrent STA+AP (e.g.
+hotspot-while-connected) use case on this otherwise-common laptop
+WiFi chip.
+
+Realtek's own vendor SDK for this chip family (used in embedded and
+Android products) ships with concurrent mode as a standard, widely
+enabled build option (CONFIG_CONCURRENT_MODE appears in nearly every
+platform profile in the vendor Makefile), suggesting the underlying
+firmware supports this operation and the gap is specifically in the
+upstream Linux driver's capability advertisement, not the hardware.
+
+Tested on a Dell Inspiron 15 3535 (RTL8821CE, PCIe), firmware version
+24.11.0 / H2C version 12. After this patch, `iw list` correctly shows:
+
+    valid interface combinations:
+         * #{ managed } <= 1, #{ AP } <= 1,
+           total <= 2, #channels <= 1
+
+Verified working end-to-end: STA interface (wlp2s0) stays associated
+to an existing AP while a second AP-mode interface is created and
+used to host a hotspot via hostapd + dnsmasq, on the same channel,
+simultaneously, with no driver errors, warnings, or instability
+observed during testing.
+
+Signed-off-by: Harman Bagrah <harmanbagrah.dev@gmail.com>
+---
+ drivers/net/wireless/realtek/rtw88/main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index 1111111..2222222 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -2296,7 +2296,8 @@ int rtw_register_hw(struct rtw_dev *rtwdev, struct ieee80211_hw *hw)
+ 	hw->wiphy->max_scan_ssids = RTW_SCAN_MAX_SSIDS;
+ 	hw->wiphy->max_scan_ie_len = rtw_get_max_scan_ie_len(rtwdev);
+ 
+-	if (rtwdev->chip->id == RTW_CHIP_TYPE_8822C) {
++	if (rtwdev->chip->id == RTW_CHIP_TYPE_8822C ||
++	    rtwdev->chip->id == RTW_CHIP_TYPE_8821C) {
+ 		hw->wiphy->iface_combinations = rtw_iface_combs;
+ 		hw->wiphy->n_iface_combinations = ARRAY_SIZE(rtw_iface_combs);
+ 	}
+--
+2.45.0
