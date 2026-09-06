@@ -2,7 +2,7 @@
 
 Enables simultaneous WiFi client (STA) + hotspot (AP) mode on RTL8821C-family
 chips using the mainline Linux `rtw88` driver — no USB dongle, no ethernet
-cable, no dual-boot into Windows required.
+cable.
 
 ## The problem
 
@@ -56,7 +56,7 @@ This installs the patch as a DKMS module, so it automatically rebuilds every
 time your kernel updates — no manual rebuilding needed after a `pacman -Syu`.
 
 ```bash
-git clone https://github.com/<your-username>/rtw88-8821c-multivif.git
+git clone https://github.com/harmanbagrahdev/rtw88-8821c-multivif.git
 cd rtw88-8821c-multivif
 sudo ./install.sh
 ```
