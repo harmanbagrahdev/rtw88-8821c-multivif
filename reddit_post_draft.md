@@ -18,7 +18,7 @@ kernel updates, plus a hostapd/dnsmasq/systemd setup for the actual hotspot
 part.
 
 Repo with the patch, install script, and full writeup:
-https://github.com/<your-username>/rtw88-8821c-multivif
+https://github.com/harmanbagrahdev/rtw88-8821c-multivif
 
 Tested on a Dell Inspiron 15 3535 (RTL8821CE) on Arch, kernel 7.2.2. Speed
 takes a real hit when both are active at once (single antenna, single radio,

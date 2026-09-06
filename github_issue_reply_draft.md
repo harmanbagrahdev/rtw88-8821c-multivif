@@ -12,7 +12,7 @@ Two-line patch fixes it. I packaged it as a DKMS module (survives kernel
 updates) plus a working hostapd/dnsmasq/systemd setup for actually running
 the hotspot on a second virtual interface while staying connected:
 
-https://github.com/<your-username>/rtw88-8821c-multivif
+https://github.com/harmanbagrahdev/rtw88-8821c-multivif
 
 Tested working on a Dell Inspiron 15 3535 (RTL8821CE), Arch Linux, kernel
 7.2.2. Real throughput hit when both are active (single antenna/radio,
